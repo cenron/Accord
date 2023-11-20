@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"fmt"
 	"time"
 )
 
@@ -32,12 +31,6 @@ func (us *UserService) CreateUser(c context.Context, req *CreateUserReq) (*Creat
 	if err != nil {
 		return nil, err
 	}
-
-	r, err := us.store.GetUserById(ctx, user.ID)
-	if err != nil {
-		return nil, err
-	}
-	fmt.Printf("%v", r)
 
 	res := &CreateUserRes{
 		ID:       user.ID,

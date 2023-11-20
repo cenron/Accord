@@ -19,7 +19,7 @@ func NewMongoDatabase() (*MongoStore, error) {
 		Password: "test",
 	}
 
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://localhost:27017").SetAuth(creds))
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://localhost:27017").SetAuth(creds))
 	if err != nil {
 		return nil, err
 	}
@@ -30,8 +30,8 @@ func NewMongoDatabase() (*MongoStore, error) {
 	}, err
 }
 
-func (s *MongoStore) CLose() {
-	if err := s.client.Disconnect(context.TODO()); err != nil {
+func (s *MongoStore) Close() {
+	if err := s.client.Disconnect(context.Background()); err != nil {
 		return
 	}
 }
@@ -55,7 +55,6 @@ func (s *MongoStore) InsertOne(ctx context.Context, collection string, data []by
 }
 
 func (s *MongoStore) GetById(ctx context.Context, collection string, id string) ([]byte, error) {
-
 	objId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err

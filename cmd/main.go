@@ -1,8 +1,8 @@
 package main
 
 import (
-	"accord/server/db"
-	"accord/server/internal/user"
+	"accord/internal/user"
+	"accord/pkg/db"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -11,12 +11,14 @@ import (
 func main() {
 	fmt.Println("Accord chat...")
 
-	db, err := db.NewMongoDatabase()
+	client, err := db.NewMongoDatabase()
 	if err != nil {
 		log.Fatalf("could not initalize database connection: %s\n", err)
 	}
 
-	userHandler := user.NewUserHandler(db)
+	defer client.Close()
+
+	userHandler := user.NewUserHandler(client)
 
 	r := gin.Default()
 	r.POST("/test", userHandler.CreateUser)
