@@ -10,6 +10,7 @@ const CollectionName = "users"
 type UserStore interface {
 	InsertOne(ctx context.Context, collection string, data []byte) (string, error)
 	GetById(ctx context.Context, collection string, id string) ([]byte, error)
+	GetByField(ctx context.Context, collection string, field string, value string) ([]byte, error)
 }
 
 type UserRepository struct {
@@ -38,9 +39,9 @@ func (r *UserRepository) CreateUser(ctx context.Context, user *User) (*User, err
 	return user, nil
 }
 
-func (r *UserRepository) GetUserById(ctx context.Context, id string) (*User, error) {
+func (r *UserRepository) GetByEmail(ctx context.Context, userName string) (*User, error) {
 	// Get the ID from the collection.
-	result, err := r.store.GetById(ctx, CollectionName, id)
+	result, err := r.store.GetByField(ctx, CollectionName, "email", userName)
 	if err != nil {
 		return &User{}, err
 	}

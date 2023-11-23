@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -62,6 +63,20 @@ func (s *MongoStore) GetById(ctx context.Context, collection string, id string) 
 
 	// Get the data by the ID field.
 	result, err := s.database.Collection(collection).FindOne(ctx, bson.M{"_id": objId}).Raw()
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (s *MongoStore) GetByField(ctx context.Context, collection string, field string, value string) ([]byte, error) {
+	if field == "" || value == "" {
+		return nil, errors.New("field and value can not be nil")
+	}
+
+	filter := bson.M{field: value}
+	result, err := s.database.Collection(collection).FindOne(ctx, filter).Raw()
 	if err != nil {
 		return nil, err
 	}
