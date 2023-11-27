@@ -1,5 +1,6 @@
 package user
 
+/*
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -52,3 +53,4 @@ func (u *UserHandler) Logout(c *gin.Context) {
 	c.SetCookie("jwt", "", -1, "", "", false, true)
 	c.JSON(http.StatusOK, gin.H{"message": "logged out user."})
 }
+*/

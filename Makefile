@@ -5,7 +5,7 @@ run: clean build
 	@./bin/accord
 
 test:
-	@go test
+	@go test ./...
 
 clean:
 	@go clean

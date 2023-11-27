@@ -1,30 +1,48 @@
 package router
 
 import (
-	"accord/internal/user"
+	"accord/internal/ws"
 	"accord/pkg/db"
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"log"
+	"time"
 )
 
-func InitRouter(store *db.MongoStore, log *log.Logger) *gin.Engine {
+func InitRouter(store *db.MongoStore, log *log.Logger) chi.Router {
 
-	r := gin.Default()
-	routeGroup := r.Group("/api")
+	r := chi.NewRouter()
 
-	// Set up our user routes.
-	userRouter(routeGroup, store)
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.Timeout(60 * time.Second))
+
+	r.Route("/api", func(r chi.Router) {
+
+		//userRouter(r, store)
+		webSocketRouter(r, store)
+
+	})
 
 	return r
 }
 
-func userRouter(rg *gin.RouterGroup, store *db.MongoStore) {
+func webSocketRouter(rg chi.Router, store *db.MongoStore) {
+	wsHandler := ws.NewWsHandler(store)
+
+	rg.Route("/v1/ws", func(r chi.Router) {
+		r.Get("/", wsHandler.JoinRoom)
+	})
+}
+
+/*func userRouter(rg chi.Router, store *db.MongoStore) {
 	userHandler := user.NewUserHandler(store)
 
-	v1 := rg.Group("/v1/user")
-	{
-		v1.POST("/signup", userHandler.Signup)
-		v1.POST("/login", userHandler.Login)
-		v1.POST("/logout", userHandler.Logout)
-	}
-}
+	rg.Route("/v1/user", func(r chi.Router) {
+		r.Post("/signup", userHandler.Signup)
+		r.Post("/login", userHandler.Login)
+		r.Post("/logout", userHandler.Logout)
+	})
+}*/
